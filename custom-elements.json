@@ -1,0 +1,687 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/vtb-pricecalculator.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "VtbPriceCalculatorDataPriceElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "price",
+              "type": {
+                "text": "number"
+              },
+              "default": "0.0"
+            },
+            {
+              "kind": "field",
+              "name": "optional",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "nights",
+              "type": {
+                "text": "number"
+              },
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "hidden",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "VtbPriceCalculatorDataPriceList",
+          "members": [
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string | undefined"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "total",
+              "type": {
+                "text": "number"
+              },
+              "default": "0.0"
+            },
+            {
+              "kind": "field",
+              "name": "displayPrices",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "displayPricesIfZero",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_elements",
+              "type": {
+                "text": "Array<VtbPriceCalculatorDataPriceElement>"
+              },
+              "privacy": "private",
+              "default": "[]"
+            },
+            {
+              "kind": "method",
+              "name": "addElement",
+              "parameters": [
+                {
+                  "name": "element",
+                  "type": {
+                    "text": "VtbPriceCalculatorDataPriceElement"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getElements"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "VtbPriceCalculatorData",
+          "members": [
+            {
+              "kind": "field",
+              "name": "elements",
+              "type": {
+                "text": "VtbPriceCalculatorDataPriceList"
+              },
+              "default": "new VtbPriceCalculatorDataPriceList()"
+            },
+            {
+              "kind": "field",
+              "name": "optionals",
+              "type": {
+                "text": "VtbPriceCalculatorDataPriceList"
+              },
+              "default": "new VtbPriceCalculatorDataPriceList()"
+            },
+            {
+              "kind": "field",
+              "name": "surcharges",
+              "type": {
+                "text": "VtbPriceCalculatorDataPriceList"
+              },
+              "default": "new VtbPriceCalculatorDataPriceList()"
+            },
+            {
+              "kind": "field",
+              "name": "per_participant",
+              "type": {
+                "text": "Array<VtbPriceCalculatorDataPriceList>"
+              },
+              "default": "[]"
+            },
+            {
+              "kind": "method",
+              "name": "getTotalPrice"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "VtbPriceCalculatorDataTransformer",
+          "members": [
+            {
+              "kind": "method",
+              "name": "load",
+              "parameters": [
+                {
+                  "name": "vtbSrcData",
+                  "type": {
+                    "text": "any"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "parseVtbElement",
+              "privacy": "protected",
+              "parameters": [
+                {
+                  "name": "element",
+                  "type": {
+                    "text": "any"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "VtbPriceCalculatorElement",
+          "members": [
+            {
+              "kind": "field",
+              "name": "locale",
+              "type": {
+                "text": "string"
+              },
+              "default": "'nl-NL'",
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "currency",
+              "type": {
+                "text": "string"
+              },
+              "default": "'EUR'",
+              "attribute": "currency"
+            },
+            {
+              "kind": "field",
+              "name": "price",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "attribute": "price"
+            },
+            {
+              "kind": "field",
+              "name": "priceType",
+              "type": {
+                "text": "string"
+              },
+              "default": "'pp'",
+              "attribute": "price-type"
+            },
+            {
+              "kind": "field",
+              "name": "displayPrice",
+              "type": {
+                "text": "boolean | string"
+              },
+              "default": "false",
+              "attribute": "display-price"
+            },
+            {
+              "kind": "field",
+              "name": "displayPricesIfZero",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "display-zero"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              },
+              "default": "'nl-NL'",
+              "fieldName": "locale"
+            },
+            {
+              "name": "currency",
+              "type": {
+                "text": "string"
+              },
+              "default": "'EUR'",
+              "fieldName": "currency"
+            },
+            {
+              "name": "price",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "fieldName": "price"
+            },
+            {
+              "name": "price-type",
+              "type": {
+                "text": "string"
+              },
+              "default": "'pp'",
+              "fieldName": "priceType"
+            },
+            {
+              "name": "display-price",
+              "type": {
+                "text": "boolean | string"
+              },
+              "default": "false",
+              "fieldName": "displayPrice"
+            },
+            {
+              "name": "display-zero",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "displayPricesIfZero"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "vtb-pricecalculator-element",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "VtbPriceCalculatorElementList",
+          "members": [
+            {
+              "kind": "field",
+              "name": "calculateTotals",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "calculate-totals"
+            },
+            {
+              "kind": "field",
+              "name": "displayTotals",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "display-totals"
+            },
+            {
+              "kind": "field",
+              "name": "displayPrices",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "displayPricesIfZero",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "display-zero"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "type": {
+                "text": "string"
+              },
+              "default": "'nl-NL'",
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "currency",
+              "type": {
+                "text": "string"
+              },
+              "default": "'EUR'",
+              "attribute": "currency"
+            },
+            {
+              "kind": "field",
+              "name": "totalPrice",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "attribute": "total-price"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "calculate-totals",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "calculateTotals"
+            },
+            {
+              "name": "display-totals",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "displayTotals"
+            },
+            {
+              "name": "display-zero",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "displayPricesIfZero"
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              },
+              "default": "'nl-NL'",
+              "fieldName": "locale"
+            },
+            {
+              "name": "currency",
+              "type": {
+                "text": "string"
+              },
+              "default": "'EUR'",
+              "fieldName": "currency"
+            },
+            {
+              "name": "total-price",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "fieldName": "totalPrice"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "vtb-pricecalculator-list",
+          "customElement": true
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "VtbPriceCalculator",
+          "members": [
+            {
+              "kind": "field",
+              "name": "calculateTotals",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "calculate-totals"
+            },
+            {
+              "kind": "field",
+              "name": "displayTotals",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "display-totals"
+            },
+            {
+              "kind": "field",
+              "name": "locale",
+              "type": {
+                "text": "string"
+              },
+              "default": "'nl-NL'",
+              "attribute": "locale"
+            },
+            {
+              "kind": "field",
+              "name": "currency",
+              "type": {
+                "text": "string"
+              },
+              "default": "'EUR'",
+              "attribute": "currency"
+            },
+            {
+              "kind": "field",
+              "name": "totalPrice",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "attribute": "total-price"
+            },
+            {
+              "kind": "field",
+              "name": "customStyles",
+              "type": {
+                "text": "string"
+              },
+              "default": "''"
+            },
+            {
+              "kind": "field",
+              "name": "priceData",
+              "type": {
+                "text": "VtbPriceCalculatorData | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "groups",
+              "type": {
+                "text": "array"
+              },
+              "default": "['elements', 'surcharges', 'optionals']"
+            },
+            {
+              "kind": "field",
+              "name": "showPerParticipant",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "renderTotals",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_renderPriceList",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "priceList",
+                  "type": {
+                    "text": "VtbPriceCalculatorDataPriceList"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderPriceData",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "calculate-totals",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "calculateTotals"
+            },
+            {
+              "name": "display-totals",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "displayTotals"
+            },
+            {
+              "name": "locale",
+              "type": {
+                "text": "string"
+              },
+              "default": "'nl-NL'",
+              "fieldName": "locale"
+            },
+            {
+              "name": "currency",
+              "type": {
+                "text": "string"
+              },
+              "default": "'EUR'",
+              "fieldName": "currency"
+            },
+            {
+              "name": "total-price",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "fieldName": "totalPrice"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "vtb-pricecalculator",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "VtbPriceCalculatorDataPriceElement",
+          "declaration": {
+            "name": "VtbPriceCalculatorDataPriceElement",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VtbPriceCalculatorDataPriceList",
+          "declaration": {
+            "name": "VtbPriceCalculatorDataPriceList",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VtbPriceCalculatorData",
+          "declaration": {
+            "name": "VtbPriceCalculatorData",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VtbPriceCalculatorDataTransformer",
+          "declaration": {
+            "name": "VtbPriceCalculatorDataTransformer",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VtbPriceCalculatorElement",
+          "declaration": {
+            "name": "VtbPriceCalculatorElement",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "vtb-pricecalculator-element",
+          "declaration": {
+            "name": "VtbPriceCalculatorElement",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VtbPriceCalculatorElementList",
+          "declaration": {
+            "name": "VtbPriceCalculatorElementList",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "vtb-pricecalculator-list",
+          "declaration": {
+            "name": "VtbPriceCalculatorElementList",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VtbPriceCalculator",
+          "declaration": {
+            "name": "VtbPriceCalculator",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "vtb-pricecalculator",
+          "declaration": {
+            "name": "VtbPriceCalculator",
+            "module": "src/vtb-pricecalculator.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/test/vtb-pricecalculator_test.ts",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/dev/main.ts",
+      "declarations": [],
+      "exports": []
+    }
+  ]
+}
