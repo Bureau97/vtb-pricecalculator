@@ -1,0 +1,13 @@
+version: "3"
+services:
+  component:
+    image: node:18-slim
+    user: node
+    volumes:
+      - ./:/app
+    working_dir: /app
+    environment:
+      - NODE_ENV=development
+    command: bash -c "npm install && npm run webpack-dev"
+    ports:
+      - "127.0.0.1:8000:8000"

@@ -4,29 +4,48 @@
   <head>
     <meta charset="utf-8" />
     <title>&lt;vtb-pricecalculator> Demo</title>
-    <!-- <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../node_modules/lit/polyfill-support.js"></script> -->
+    <!--
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/lit/polyfill-support.js"></script>
+    -->
     <script type="module" src="/dist/main.js"></script>
-    <style>
-      p {
-        border: solid 1px blue;
-        padding: 8px;
-      }
-      vtb-pricecalculator.cover {
-        display: block;
-      }
-    </style>
+    <style></style>
   </head>
   <body>
     <section>
-      <vtb-pricecalculator calculate-totals total-price="1134,14" currency=EUR>
+      <h2>Calculator Static</h2>
+      <vtb-pricecalculator
+        id="calculator-static"
+        display-totals
+        total-price="1134.23"
+        currency="EUR"
+      >
         <vtb-pricecalculator-list title="Prijzen zijn inclusief">
-          <vtb-pricecalculator-element currency="EUR" price="" pricetype="">Intercontinentale vluchten met American Airlines</vtb-pricecalculator-element>
-          <vtb-pricecalculator-element currency="EUR" price="" pricetype="" display-price=1>Intercontinentale vluchten met United Airlines</vtb-pricecalculator-element>
-          <vtb-pricecalculator-element currency="EUR" price="" pricetype="" display-price="incl.">Intercontinentale vluchten met British Airways</vtb-pricecalculator-element>
-          <vtb-pricecalculator-element currency="EUR" price="330,00" pricetype="pp">Inclusief taxen/toeslagen (op dit moment)</vtb-pricecalculator-element>
-          <vtb-pricecalculator-element currency="EUR" price="" pricetype="">Vermelde transfers</vtb-pricecalculator-element>
-          <vtb-pricecalculator-element currency="EUR" price="" pricetype="">Alle hotelovernachtingen</vtb-pricecalculator-element>
+          <vtb-pricecalculator-element currency="EUR" price="" pricetype=""
+            >Intercontinentale vluchten met American
+            Airlines</vtb-pricecalculator-element
+          >
+          <vtb-pricecalculator-element currency="EUR" price="" pricetype=""
+            >Intercontinentale vluchten met United
+            Airlines</vtb-pricecalculator-element
+          >
+          <vtb-pricecalculator-element currency="EUR" price="" pricetype=""
+            >Intercontinentale vluchten met British
+            Airways</vtb-pricecalculator-element
+          >
+          <vtb-pricecalculator-element
+            currency="EUR"
+            price="330,00"
+            pricetype="pp"
+            >Inclusief taxen/toeslagen (op dit
+            moment)</vtb-pricecalculator-element
+          >
+          <vtb-pricecalculator-element currency="EUR" price="" pricetype=""
+            >Vermelde transfers</vtb-pricecalculator-element
+          >
+          <vtb-pricecalculator-element currency="EUR" price="" pricetype=""
+            >Alle hotelovernachtingen</vtb-pricecalculator-element
+          >
           <vtb-pricecalculator-element currency="EUR" price="" pricetype="">
             Camper: (TYPE) van dag 6 t/m dag 23
             <ul>
@@ -39,17 +58,62 @@
               <li>Roadbook voor uw route met campingovernachtingen</li>
             </ul>
           </vtb-pricecalculator-element>
-          <vtb-pricecalculator-element currency="EUR" price="" pricetype="">Volledige CO2 compensatie van uw reis</vtb-pricecalculator-element>
+          <vtb-pricecalculator-element
+            currency="EUR"
+            price="9.99"
+            pricetype="pp"
+            >Volledige CO2 compensatie van uw reis</vtb-pricecalculator-element
+          >
         </vtb-pricecalculator-list>
         <vtb-pricecalculator-list title="Bijkomende kosten">
-          <vtb-pricecalculator-element currency="EUR" price="35.00" pricetype="unit">Administratiekosten Special Traffic</vtb-pricecalculator-element>
+          <vtb-pricecalculator-element
+            currency="EUR"
+            price="35.00"
+            pricetype="unit"
+            display-price="true"
+            >Administratiekosten Special Traffic</vtb-pricecalculator-element
+          >
+          <vtb-pricecalculator-element
+            currency="EUR"
+            price="29.00"
+            pricetype="unit"
+            display-price="true"
+            >Boekingskosten</vtb-pricecalculator-element
+          >
         </vtb-pricecalculator-list>
         <vtb-pricecalculator-list title="Upgrades">
-          <vtb-pricecalculator-element currency="EUR" price="115.67" pricetype="pp">Millennium Hotel Times Square in New York City</vtb-pricecalculator-element>
-          <vtb-pricecalculator-element currency="EUR" price="30.00" pricetype="pppn">Embassy Row Hotel in Washington DC</vtb-pricecalculator-element>
-          <vtb-pricecalculator-element currency="EUR" price="24.00" pricetype="pppn">Grafton on Sunset in Los Angeles</vtb-pricecalculator-element>
+          <vtb-pricecalculator-element
+            currency="EUR"
+            price="115.67"
+            pricetype="pp"
+            display-price="true"
+            >Millennium Hotel Times Square in New York
+            City</vtb-pricecalculator-element
+          >
+          <vtb-pricecalculator-element
+            currency="EUR"
+            price="30.00"
+            pricetype="pppn"
+            display-price="true"
+            >Embassy Row Hotel in Washington DC</vtb-pricecalculator-element
+          >
+          <vtb-pricecalculator-element
+            currency="EUR"
+            price="24.00"
+            pricetype="pppn"
+            display-price="true"
+            >Grafton on Sunset in Los Angeles</vtb-pricecalculator-element
+          >
         </vtb-pricecalculator-list>
       </vtb-pricecalculator>
+    </section>
+
+    <section>
+      <h2>Calculator Dynamic</h2>
+      <vtb-pricecalculator
+        id="calc-dynamic"
+        display-totals
+      ></vtb-pricecalculator>
     </section>
   </body>
 </html>
