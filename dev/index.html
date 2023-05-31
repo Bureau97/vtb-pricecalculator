@@ -8,8 +8,28 @@
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../node_modules/lit/polyfill-support.js"></script>
     -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
     <script type="module" src="/dist/main.js"></script>
-    <style></style>
+    <style>
+      body {
+        line-height: 170%;
+        font-family: 'Open Sans', sans-serif;
+      }
+
+      vtb-pricecalculator {
+        max-width: 768px;
+        margin: 0 auto;
+      }
+
+      vtb-pricecalculator-element {
+        border-bottom: 1px solid #ccc;
+      }
+    </style>
   </head>
   <body>
     <section>
@@ -109,10 +129,48 @@
     </section>
 
     <section>
-      <h2>Calculator Dynamic</h2>
+      <h2>Dynamic calculators</h2>
+
       <vtb-pricecalculator
-        id="calc-dynamic"
+        id="calc-dynamic-accos"
         display-totals
+        title="Accommodaties"
+      ></vtb-pricecalculator>
+
+      <vtb-pricecalculator
+        id="calc-dynamic-carrental"
+        display-totals
+        title="Autohuur"
+      ></vtb-pricecalculator>
+
+      <vtb-pricecalculator
+        id="calc-dynamic-flight"
+        display-totals
+        title="Vluchten"
+      ></vtb-pricecalculator>
+
+      <vtb-pricecalculator
+        id="calc-dynamic-flightadditional"
+        display-totals
+        title="Vluchten bijkomende kosten"
+      ></vtb-pricecalculator>
+
+      <!-- <vtb-pricecalculator
+        id="calc-dynamic-flighttotal"
+        display-totals
+        title="Vluchten"
+      ></vtb-pricecalculator>
+ -->
+      <vtb-pricecalculator
+        id="calc-dynamic-additions"
+        display-totals
+        title="Toeslagen"
+      ></vtb-pricecalculator>
+
+      <vtb-pricecalculator
+        id="calc-dynamic-test"
+        display-totals
+        title="Pakket"
       ></vtb-pricecalculator>
     </section>
   </body>
