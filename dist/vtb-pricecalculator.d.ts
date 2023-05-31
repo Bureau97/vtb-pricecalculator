@@ -1,46 +1,33 @@
 import { LitElement } from 'lit';
 import { TemplateResult } from 'lit-element';
-export declare enum VtbSegmentTypes {
-    DESTINATION = 1,
-    FLIGHT = 2,
-    ADDITIONAL = 3,
-    HIDDEN = 4
-}
-export declare enum VtbUnitTypes {
-    ACCO = 2,
-    TRANSPORT = 4,
-    TRANSFER = 5,
-    CARRENTAL = 6,
-    SURCHARGE = 11
+declare class VtbPriceCalculatorDataPriceParticipant {
+    participant_id: string;
+    price: number;
 }
 export declare class VtbPriceCalculatorDataPriceElement {
     title?: string;
+    subtitle?: string;
     price: number;
     optional: boolean;
     nights: number;
     hidden: boolean;
+    day?: number;
+    unitid?: number;
+    participants?: Array<VtbPriceCalculatorDataPriceParticipant>;
+    grouptitle?: string;
 }
-export declare class VtbPriceCalculatorDataPriceList {
-    title?: string;
-    total: number;
-    displayPrices: boolean;
-    displayPricesIfZero: boolean;
-    private _elements;
-    constructor();
-    addElement(element: VtbPriceCalculatorDataPriceElement): this;
-    getElements(): VtbPriceCalculatorDataPriceElement[];
+export declare class FilterConfig {
+    segments?: Array<Array<number | string>>;
+    units?: Array<Array<number | string>>;
+    participants?: Array<number | string>;
+    optional?: boolean;
 }
 export declare class VtbPriceCalculatorData {
-    elements: VtbPriceCalculatorDataPriceList;
-    optionals: VtbPriceCalculatorDataPriceList;
-    surcharges: VtbPriceCalculatorDataPriceList;
-    per_participant: Array<VtbPriceCalculatorDataPriceList>;
-    constructor();
-    getTotalPrice(): number;
-}
-export declare class VtbPriceCalculatorDataTransformer {
-    load(vtbSrcData: any): VtbPriceCalculatorData;
-    protected parseVtbElement(element: any): VtbPriceCalculatorDataPriceElement;
+    _data: any;
+    filter(config?: FilterConfig): VtbPriceCalculatorDataPriceElement[];
+    calculate(elements: Array<VtbPriceCalculatorDataPriceElement>): number;
+    load(vtbSrcData: any): this;
+    protected parseVtbElement(element: any, grouptitle?: string): VtbPriceCalculatorDataPriceElement;
 }
 export declare class VtbPriceCalculatorElement extends LitElement {
     static styles: import("lit").CSSResult;
@@ -71,13 +58,14 @@ export declare class VtbPriceCalculator extends LitElement {
     currency: string;
     totalPrice: number;
     customStyles: string;
-    priceData?: VtbPriceCalculatorData;
+    priceData?: Array<VtbPriceCalculatorDataPriceElement>;
     groups: string[];
     showPerParticipant: boolean;
     render(): TemplateResult<1>;
     private renderTotals;
-    private _renderPriceList;
+    renderElementDescription(element: VtbPriceCalculatorDataPriceElement): string;
     private _renderPriceData;
+    private _renderPriceList;
 }
 declare global {
     interface HTMLElementTagNameMap {
@@ -86,4 +74,5 @@ declare global {
         'vtb-pricecalculator-element': VtbPriceCalculatorElement;
     }
 }
+export {};
 //# sourceMappingURL=vtb-pricecalculator.d.ts.map

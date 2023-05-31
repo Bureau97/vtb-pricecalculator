@@ -6,23 +6,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-// import {styleMap, StyleInfo} from 'lit/directives/style-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-export var VtbSegmentTypes;
-(function (VtbSegmentTypes) {
-    VtbSegmentTypes[VtbSegmentTypes["DESTINATION"] = 1] = "DESTINATION";
-    VtbSegmentTypes[VtbSegmentTypes["FLIGHT"] = 2] = "FLIGHT";
-    VtbSegmentTypes[VtbSegmentTypes["ADDITIONAL"] = 3] = "ADDITIONAL";
-    VtbSegmentTypes[VtbSegmentTypes["HIDDEN"] = 4] = "HIDDEN";
-})(VtbSegmentTypes || (VtbSegmentTypes = {}));
-export var VtbUnitTypes;
-(function (VtbUnitTypes) {
-    VtbUnitTypes[VtbUnitTypes["ACCO"] = 2] = "ACCO";
-    VtbUnitTypes[VtbUnitTypes["TRANSPORT"] = 4] = "TRANSPORT";
-    VtbUnitTypes[VtbUnitTypes["TRANSFER"] = 5] = "TRANSFER";
-    VtbUnitTypes[VtbUnitTypes["CARRENTAL"] = 6] = "CARRENTAL";
-    VtbUnitTypes[VtbUnitTypes["SURCHARGE"] = 11] = "SURCHARGE";
-})(VtbUnitTypes || (VtbUnitTypes = {}));
+class VtbPriceCalculatorDataPriceParticipant {
+    constructor() {
+        this.participant_id = '';
+        this.price = 0.0;
+    }
+}
 export class VtbPriceCalculatorDataPriceElement {
     constructor() {
         this.price = 0.0;
@@ -31,76 +21,124 @@ export class VtbPriceCalculatorDataPriceElement {
         this.hidden = false;
     }
 }
-export class VtbPriceCalculatorDataPriceList {
+export class FilterConfig {
     constructor() {
-        this.total = 0.0;
-        this.displayPrices = false;
-        this.displayPricesIfZero = false;
-        this._elements = [];
-        this.title = '';
-    }
-    addElement(element) {
-        var _a;
-        (_a = this._elements) === null || _a === void 0 ? void 0 : _a.push(element);
-        if (!element.optional) {
-            this.total += element.price;
-        }
-        return this;
-    }
-    getElements() {
-        return this._elements;
+        this.segments = [];
+        this.units = [];
+        this.participants = [];
     }
 }
 export class VtbPriceCalculatorData {
-    constructor() {
-        this.elements = new VtbPriceCalculatorDataPriceList();
-        this.optionals = new VtbPriceCalculatorDataPriceList();
-        this.surcharges = new VtbPriceCalculatorDataPriceList();
-        this.per_participant = [];
-    }
-    getTotalPrice() {
-        let totals = 0.0;
-        if (this.elements) {
-            totals += this.elements.total;
+    filter(config) {
+        const price_elements = [];
+        const _segment_ids = (config === null || config === void 0 ? void 0 : config.segments) || Object.keys(this._data);
+        const segment_ids = _segment_ids.flat(Infinity);
+        const _unit_ids = (config === null || config === void 0 ? void 0 : config.units) || [];
+        const unit_ids = _unit_ids.flat(Infinity);
+        const _participant_ids = (config === null || config === void 0 ? void 0 : config.participants) || [];
+        const participant_ids = _participant_ids.flat(Infinity);
+        let check_unit_ids = false;
+        if (unit_ids.length >= 1) {
+            check_unit_ids = true;
         }
-        if (this.surcharges) {
-            totals += this.surcharges.total;
+        let check_participant_ids = false;
+        if (participant_ids.length >= 1) {
+            check_participant_ids = true;
         }
-        return totals;
-    }
-}
-export class VtbPriceCalculatorDataTransformer {
-    load(vtbSrcData) {
-        var _a, _b, _c;
-        const _data = new VtbPriceCalculatorData();
-        for (const segment of vtbSrcData.segments) {
-            for (const element of segment.elements) {
-                const _element = this.parseVtbElement(element);
-                if (segment.typeId == VtbSegmentTypes.DESTINATION ||
-                    segment.typeId == VtbSegmentTypes.FLIGHT) {
-                    if (_element.optional) {
-                        (_a = _data.optionals) === null || _a === void 0 ? void 0 : _a.addElement(_element);
+        let skip_optional = false;
+        if ((config === null || config === void 0 ? void 0 : config.optional) === false) {
+            skip_optional = true;
+        }
+        let only_optional = false;
+        if ((config === null || config === void 0 ? void 0 : config.optional) === true) {
+            only_optional = true;
+        }
+        for (const segment_id of segment_ids) {
+            const segment = this._data[Number(segment_id)];
+            for (const unit_id of Object.keys(segment)) {
+                if (!check_unit_ids ||
+                    (check_unit_ids && unit_ids.includes(Number(unit_id)))) {
+                    if (!skip_optional && !check_participant_ids && !only_optional) {
+                        price_elements.push(...segment[unit_id]);
+                        continue;
                     }
-                    else {
-                        (_b = _data.elements) === null || _b === void 0 ? void 0 : _b.addElement(_element);
-                    }
-                }
-                if (segment.typeId == VtbSegmentTypes.ADDITIONAL ||
-                    segment.typeId == VtbSegmentTypes.HIDDEN) {
-                    _element.hidden = segment.typeId == VtbSegmentTypes.HIDDEN;
-                    (_c = _data.surcharges) === null || _c === void 0 ? void 0 : _c.addElement(_element);
+                    // additional checks
+                    const units = segment[unit_id].map((u) => {
+                        // check on optional
+                        if ((skip_optional && u.optional) ||
+                            (only_optional && !u.optional)) {
+                            return;
+                        }
+                        // if no check for participants is required
+                        if (!check_participant_ids) {
+                            return u;
+                        }
+                        // check participants
+                        if (check_participant_ids && u.participants) {
+                            // make a shallow copy so we're not messing with the original price element
+                            const u_copy = { ...u };
+                            let participants_unit_price = 0.0;
+                            for (const p of u.participants) {
+                                if (participant_ids.includes(p.participant_id.toString())) {
+                                    participants_unit_price += p.price;
+                                }
+                            }
+                            u_copy.price = participants_unit_price;
+                            return u_copy;
+                        }
+                        return;
+                    });
+                    price_elements.push(...units);
                 }
             }
         }
-        return _data;
+        return price_elements;
     }
-    parseVtbElement(element) {
-        const _element = new VtbPriceCalculatorDataPriceElement();
-        _element.title = element.title;
-        _element.optional = element.optional;
-        _element.price = parseFloat(element.olPrices.salesTotal || 0);
-        _element.nights = element.flexNights || element.nights;
-        return _element;
+    calculate(elements) {
+        let total = 0.0;
+        for (const element of elements) {
+            if (!element.optional) {
+                total += element.price;
+            }
+        }
+        return total;
+    }
+    load(vtbSrcData) {
+        const parsed_data = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+        for (const segment of vtbSrcData.segments) {
+            if (!(segment.typeId in parsed_data)) {
+                parsed_data[segment.typeId] = {};
+            }
+            for (const element of segment.elements) {
+                if (!(element.unitId in parsed_data[segment.typeId])) {
+                    parsed_data[segment.typeId][element.unitId] = [];
+                }
+                const price_element = this.parseVtbElement(element, segment.title);
+                parsed_data[segment.typeId][element.unitId].push(price_element);
+            }
+        }
+        this._data = parsed_data;
+        return this;
+    }
+    parseVtbElement(element, grouptitle) {
+        var _a;
+        const price_element = new VtbPriceCalculatorDataPriceElement();
+        price_element.title = element.title;
+        price_element.subtitle = element.subTitle;
+        price_element.optional = element.optional;
+        price_element.price = parseFloat(element.olPrices.salesTotal || 0);
+        price_element.nights = element.flexNights || element.nights;
+        price_element.day = element.day;
+        price_element.unitid = element.unitId;
+        price_element.grouptitle = grouptitle;
+        price_element.participants = [];
+        for (const participant_id of Object.keys(element.olPrices.participants)) {
+            const participant_element = new VtbPriceCalculatorDataPriceParticipant();
+            participant_element.participant_id = participant_id;
+            participant_element.price = parseFloat(((_a = element.olPrices.participants[participant_id]) === null || _a === void 0 ? void 0 : _a.salesPrice) || 0);
+            price_element.participants.push(participant_element);
+        }
+        return price_element;
     }
 }
 let VtbPriceCalculatorElement = class VtbPriceCalculatorElement extends LitElement {
@@ -291,9 +329,9 @@ let VtbPriceCalculator = class VtbPriceCalculator extends LitElement {
         this.showPerParticipant = false;
     }
     render() {
-        let _innerHTML = '';
+        let slotHTML = '';
         if (this.children.length == 0 && this.priceData) {
-            _innerHTML = this._renderPriceData();
+            slotHTML = this._renderPriceData();
         }
         let customStyles;
         if (this.customStyles) {
@@ -304,7 +342,7 @@ let VtbPriceCalculator = class VtbPriceCalculator extends LitElement {
         return html `
       ${customStyles}
       <div class="price-calculator">
-        <slot>${_innerHTML}</slot>
+        <slot>${slotHTML}</slot>
         ${this.renderTotals()}
       </div>
     `;
@@ -326,9 +364,21 @@ let VtbPriceCalculator = class VtbPriceCalculator extends LitElement {
         }
         return '';
     }
+    renderElementDescription(element) {
+        return `${element.nights + 1} dgn. - ${element.title}`;
+    }
+    _renderPriceData() {
+        const priceData = this
+            .priceData;
+        return html `
+      <vtb-pricecalculator-list title=${ifDefined(this.title)}>
+        ${this._renderPriceList(priceData)}
+      </vtb-pricecalculator-list>
+    `;
+    }
     _renderPriceList(priceList) {
         const elementTemplates = [];
-        for (const element of priceList.getElements()) {
+        for (const element of priceList) {
             if (element.hidden) {
                 continue;
             }
@@ -337,35 +387,13 @@ let VtbPriceCalculator = class VtbPriceCalculator extends LitElement {
             price=${element.price}
             currency=${this.currency}
             price-type=""
-            display-price=${ifDefined(priceList.displayPrices)}
-            display-zero=${ifDefined(priceList.displayPricesIfZero)}
+            display-price="true"
           >
-            ${element.title}
+            ${this.renderElementDescription(element)}
           </vtb-pricecalculator-element>
         `);
         }
         return elementTemplates;
-    }
-    _renderPriceData() {
-        const priceData = this.priceData;
-        const listTemplates = [];
-        for (const group of this.groups) {
-            const _group = group;
-            const priceList = priceData[_group];
-            listTemplates.push(html `
-          <vtb-pricecalculator-list
-            title=${ifDefined(priceList.title)}
-          >
-            ${this._renderPriceList(priceList)}
-          </vtb-pricecalculator-list>
-        `);
-        }
-        // if (this.showPerParticipant) {
-        //     for (const participantPriceLists of this.per_participant) {
-        //     }
-        // }
-        this.totalPrice = priceData.getTotalPrice();
-        return html `${listTemplates}`;
     }
 };
 VtbPriceCalculator.styles = css `
@@ -400,7 +428,7 @@ __decorate([
     property({ type: String, attribute: false })
 ], VtbPriceCalculator.prototype, "customStyles", void 0);
 __decorate([
-    property({ type: Object, attribute: false })
+    property({ type: Array, attribute: false })
 ], VtbPriceCalculator.prototype, "priceData", void 0);
 __decorate([
     property({ type: Array, attribute: false })
