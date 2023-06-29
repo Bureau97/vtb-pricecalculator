@@ -3,23 +3,28 @@ import {customElement, property} from 'lit/decorators.js';
 import {TemplateResult} from 'lit-element';
 import {ifDefined} from 'lit/directives/if-defined.js';
 
+
 class VtbPriceCalculatorDataPriceParticipant {
   participant_id = '';
   price = 0.0;
 }
 
+
 export class VtbPriceCalculatorDataPriceElement {
+  id = 0;
   title?: string;
   subtitle?: string;
   price = 0.0;
+  price_diff = 0.0;
   optional = false;
   nights = 0;
   hidden = false;
   day?: number;
-  unitid?: number;
+  unit_id?: number;
   participants?: Array<VtbPriceCalculatorDataPriceParticipant>;
   grouptitle?: string;
 }
+
 
 export class FilterConfig {
   segments?: Array<Array<number | string>> = [];
@@ -27,6 +32,7 @@ export class FilterConfig {
   participants?: Array<number | string> = [];
   optional?: boolean;
 }
+
 
 export class VtbPriceCalculatorData {
   _data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -66,6 +72,10 @@ export class VtbPriceCalculatorData {
     for (const segment_id of segment_ids) {
       const segment = this._data[Number(segment_id)];
 
+      if (!segment) {
+        continue;
+      }
+
       for (const unit_id of Object.keys(segment)) {
         if (
           !check_unit_ids ||
@@ -77,19 +87,20 @@ export class VtbPriceCalculatorData {
           }
 
           // additional checks
-          const units = segment[unit_id].map(
-            (u: VtbPriceCalculatorDataPriceElement) => {
-              // check on optional
-              if (
+          const units: Array<VtbPriceCalculatorDataPriceElement> = [];
+          for (const u of segment[unit_id]) {
+            // check on optional
+            if (
                 (skip_optional && u.optional) ||
                 (only_optional && !u.optional)
               ) {
-                return;
+                continue;
               }
 
               // if no check for participants is required
               if (!check_participant_ids) {
-                return u;
+                units.push(u);
+                continue;
               }
 
               // check participants
@@ -104,13 +115,9 @@ export class VtbPriceCalculatorData {
                   }
                 }
                 u_copy.price = participants_unit_price;
-                return u_copy;
+                units.push(u);
               }
-
-              return;
-            }
-          );
-
+          }
           price_elements.push(...units);
         }
       }
@@ -121,9 +128,10 @@ export class VtbPriceCalculatorData {
 
   calculate(elements: Array<VtbPriceCalculatorDataPriceElement>) {
     let total = 0.0;
+    // console.info(elements)
 
     for (const element of elements) {
-      if (!element.optional) {
+      if (element && !element.optional) {
         total += element.price;
       }
     }
@@ -135,11 +143,15 @@ export class VtbPriceCalculatorData {
     const parsed_data: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     for (const segment of vtbSrcData.segments) {
+      // console.info(segment.typeId, segment.typeName, segment);
+      // console.info('Segment', segment.typeId, segment.typeName, segment.title, segment.day);
       if (!(segment.typeId in parsed_data)) {
         parsed_data[segment.typeId] = {};
       }
 
+      let last_element = null;
       for (const element of segment.elements) {
+        // console.info('Element', element.unitId, element.unitName, element.title, element);
         if (!(element.unitId in parsed_data[segment.typeId])) {
           parsed_data[segment.typeId][element.unitId] = [];
         }
@@ -147,7 +159,17 @@ export class VtbPriceCalculatorData {
         const price_element: VtbPriceCalculatorDataPriceElement =
           this.parseVtbElement(element, segment.title);
 
+        if (last_element && price_element.optional && last_element.unit_id == price_element.unit_id) {
+          console.info('Optional element: ', price_element.title, price_element.subtitle, price_element.price, last_element.price, last_element.price - price_element.price);
+          price_element.price_diff = price_element.price - last_element.price;  // price difference between non-optional and optional elements
+        }
+
         parsed_data[segment.typeId][element.unitId].push(price_element);
+
+        if (!price_element.optional || last_element && price_element.unit_id != last_element.unit_id) {
+          console.info('set last element: ', price_element.title, price_element.subtitle, price_element.price);
+          last_element = price_element;  // act as default element
+        }
       }
     }
     this._data = parsed_data;
@@ -158,13 +180,14 @@ export class VtbPriceCalculatorData {
   protected parseVtbElement(element: any, grouptitle?: string) {  // eslint-disable-line @typescript-eslint/no-explicit-any
     const price_element = new VtbPriceCalculatorDataPriceElement();
 
+    price_element.id = element.id;
     price_element.title = element.title;
     price_element.subtitle = element.subTitle;
     price_element.optional = element.optional;
     price_element.price = parseFloat(element.olPrices.salesTotal || 0);
     price_element.nights = element.flexNights || element.nights;
     price_element.day = element.day;
-    price_element.unitid = element.unitId;
+    price_element.unit_id = element.unitId;
     price_element.grouptitle = grouptitle;
 
     price_element.participants = [];
@@ -441,6 +464,10 @@ export class VtbPriceCalculator extends LitElement {
     return `${element.nights + 1} dgn. - ${element.title}`;
   }
 
+  public getElementPrice(element: VtbPriceCalculatorDataPriceElement) {
+    return `${element.price}`;
+  }
+
   private _renderPriceData() {
     const priceData = this
       .priceData as Array<VtbPriceCalculatorDataPriceElement>;
@@ -457,14 +484,14 @@ export class VtbPriceCalculator extends LitElement {
     const elementTemplates: Array<TemplateResult> = [];
 
     for (const element of priceList) {
-      if (element.hidden) {
+      if (element && element.hidden) {
         continue;
       }
 
       elementTemplates.push(
         html`
           <vtb-pricecalculator-element
-            price=${element.price}
+            price=${this.getElementPrice(element)}
             currency=${this.currency}
             price-type=""
             display-price="true"
